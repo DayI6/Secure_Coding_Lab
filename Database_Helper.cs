@@ -11,12 +11,14 @@ namespace SampleApp
         // ❌ Vulnerable SQL Injection (CodeQL will detect this)
         public string GetUserByName_Insecure(string username)
         {
-            string query = "SELECT * FROM Users WHERE Username = '" + username + "'";
+            // FIXED: Use parameterized query to prevent SQL injection
+            string query = "SELECT * FROM Users WHERE Username = @username";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
+                    command.Parameters.AddWithValue("@username", username);
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
 
